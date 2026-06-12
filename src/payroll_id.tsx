@@ -16,7 +16,7 @@ function lookupTER(base,ptkp){
 }
 const PTKP={"TK/0":54000000,"TK/1":58500000,"TK/2":63000000,"TK/3":67500000,"K/0":58500000,"K/1":63000000,"K/2":67500000,"K/3":72000000,"HB/0":108000000,"HB/1":112500000,"HB/2":117000000,"HB/3":121500000};
 const P17=[{l:60000000,r:.05},{l:190000000,r:.15},{l:250000000,r:.25},{l:4500000000,r:.30},{l:Infinity,r:.35}];
-const JKK_R={"I â Sangat Rendah (0.24%)":0.0024,"II â Rendah (0.54%)":0.0054,"III â Sedang (0.89%)":0.0089,"IV â Tinggi (1.27%)":0.0127,"V â Sangat Tinggi (1.74%)":0.0174};
+const JKK_R={"I — Sangat Rendah (0.24%)":0.0024,"II — Rendah (0.54%)":0.0054,"III — Sedang (0.89%)":0.0089,"IV — Tinggi (1.27%)":0.0127,"V — Sangat Tinggi (1.74%)":0.0174};
 const JP_OLD=10547400,JP_NEW=11086300,KES_CAP=12000000;
 const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const fmt=n=>"Rp "+Math.round(n).toLocaleString("id-ID");
@@ -136,28 +136,28 @@ function MonthRow({mn,i,row,active,isFin,isExp,onToggle,emp,fmt,pct}){
   const mainTr=(
     <tr style={{borderBottom:isExp&&showBtn?"none":"0.5px solid var(--color-border-tertiary)",background:isFin?"var(--color-background-warning)":"transparent",opacity:active?1:0.3}}>
       <td style={{padding:"5px 4px",fontSize:12,fontWeight:isFin?500:400}}>
-        {mn}{isFin?" â":""}
-        {active&&row.hasBonuses&&<span style={{marginLeft:3,fontSize:10,color:"var(--color-text-info)"}}>ð</span>}
-        {active&&row.hasSalaryChange&&<span style={{marginLeft:3,fontSize:10,color:"var(--color-text-warning)"}}>â</span>}
+        {mn}{isFin?" ★":""}
+        {active&&row.hasBonuses&&<span style={{marginLeft:3,fontSize:10,color:"var(--color-text-info)"}}>🎁</span>}
+        {active&&row.hasSalaryChange&&<span style={{marginLeft:3,fontSize:10,color:"var(--color-text-warning)"}}>↑</span>}
       </td>
-      <td style={s}>{active?fmt(row.gross):"â"}</td>
-      {emp.bpjsAllowEnabled&&<td style={{...s,color:"var(--color-text-warning)"}}>{active&&row.bpjsAllow>0?fmt(row.bpjsAllow):"â"}</td>}
-      <td style={{...s,color:"var(--color-text-secondary)"}}>{active&&row.erTaxable>0?fmt(row.erTaxable):"â"}</td>
-      <td style={{...s,fontWeight:600}}>{active?fmt(row.terBase):"â"}</td>
-      <td style={s}>{active?pct(row.ter):"â"}</td>
-      <td style={{...s,color:"var(--color-text-success)"}}>{active&&row.taxAllow2>0?fmt(row.taxAllow2):"â"}</td>
-      <td style={{...s,color:"var(--color-text-success)"}}>{active&&row.totalTAItems>0?fmt(row.totalTAItems):"â"}</td>
-      <td style={s}>{active&&row.totalTaxableGross>0?fmt(row.totalTaxableGross):"â"}</td>
-      <td style={s}>{active&&row.nonTaxableAllow>0?fmt(row.nonTaxableAllow):"â"}</td>
-      <td style={{...s,color:"var(--color-text-info)"}}>{active&&row.totalBonusGross>0?fmt(row.totalBonusGross):"â"}</td>
-      <td style={{...s,fontWeight:600}}>{active?fmt(row.pph21):"â"}</td>
-      <td style={s}>{active?fmt(row.bpjs.jhtEmp):"â"}</td>
-      <td style={s}>{active?fmt(row.bpjs.jpEmp):"â"}</td>
-      {emp.bpjsKesEnabled&&<td style={s}>{active?fmt(row.bpjs.kesEmp):"â"}</td>}
-      <td style={{...s,fontWeight:600}}>{active?fmt(row.empDeduct):"â"}</td>
-      <td style={{...s,fontWeight:600,color:"var(--color-text-success)"}}>{active?fmt(row.netPay):"â"}</td>
+      <td style={s}>{active?fmt(row.gross):"—"}</td>
+      {emp.bpjsAllowEnabled&&<td style={{...s,color:"var(--color-text-warning)"}}>{active&&row.bpjsAllow>0?fmt(row.bpjsAllow):"—"}</td>}
+      <td style={{...s,color:"var(--color-text-secondary)"}}>{active&&row.erTaxable>0?fmt(row.erTaxable):"—"}</td>
+      <td style={{...s,fontWeight:600}}>{active?fmt(row.terBase):"—"}</td>
+      <td style={s}>{active?pct(row.ter):"—"}</td>
+      <td style={{...s,color:"var(--color-text-success)"}}>{active&&row.taxAllow2>0?fmt(row.taxAllow2):"—"}</td>
+      <td style={{...s,color:"var(--color-text-success)"}}>{active&&row.totalTAItems>0?fmt(row.totalTAItems):"—"}</td>
+      <td style={s}>{active&&row.totalTaxableGross>0?fmt(row.totalTaxableGross):"—"}</td>
+      <td style={s}>{active&&row.nonTaxableAllow>0?fmt(row.nonTaxableAllow):"—"}</td>
+      <td style={{...s,color:"var(--color-text-info)"}}>{active&&row.totalBonusGross>0?fmt(row.totalBonusGross):"—"}</td>
+      <td style={{...s,fontWeight:600}}>{active?fmt(row.pph21):"—"}</td>
+      <td style={s}>{active?fmt(row.bpjs.jhtEmp):"—"}</td>
+      <td style={s}>{active?fmt(row.bpjs.jpEmp):"—"}</td>
+      {emp.bpjsKesEnabled&&<td style={s}>{active?fmt(row.bpjs.kesEmp):"—"}</td>}
+      <td style={{...s,fontWeight:600}}>{active?fmt(row.empDeduct):"—"}</td>
+      <td style={{...s,fontWeight:600,color:"var(--color-text-success)"}}>{active?fmt(row.netPay):"—"}</td>
       <td style={{...s,textAlign:"center"}}>
-        {showBtn&&<button onClick={()=>onToggle(i)} style={{fontSize:11,padding:"2px 8px",cursor:"pointer",border:"0.5px solid var(--color-border-tertiary)",borderRadius:4,background:"transparent"}}>{isExp?"â²":"â¼"}</button>}
+        {showBtn&&<button onClick={()=>onToggle(i)} style={{fontSize:11,padding:"2px 8px",cursor:"pointer",border:"0.5px solid var(--color-border-tertiary)",borderRadius:4,background:"transparent"}}>{isExp?"▲":"▼"}</button>}
       </td>
     </tr>
   );
@@ -176,11 +176,11 @@ function MonthRow({mn,i,row,active,isFin,isExp,onToggle,emp,fmt,pct}){
                   <thead><tr>{ths}</tr></thead>
                   <tbody>{row.rAllows.map((a,j)=>(
                     <tr key={j} style={{borderBottom:"0.5px solid var(--color-border-tertiary)"}}>
-                      <td style={{padding:"3px 8px"}}>{a.name||"â"}</td>
+                      <td style={{padding:"3px 8px"}}>{a.name||"—"}</td>
                       <td style={{textAlign:"right",padding:"3px 8px"}}>{fmt(a.amount)}</td>
                       <td style={{padding:"3px 8px",color:"#888"}}>{a.isNet?"Net":"Gross"}</td>
                       <td style={{textAlign:"right",padding:"3px 8px",fontWeight:500}}>{fmt(a.grossAmt)}</td>
-                      <td style={{textAlign:"right",padding:"3px 8px",color:"green",fontWeight:500}}>{a.taxAllow>0?fmt(a.taxAllow):"â"}</td>
+                      <td style={{textAlign:"right",padding:"3px 8px",color:"green",fontWeight:500}}>{a.taxAllow>0?fmt(a.taxAllow):"—"}</td>
                     </tr>
                   ))}</tbody>
                 </table>
@@ -193,11 +193,11 @@ function MonthRow({mn,i,row,active,isFin,isExp,onToggle,emp,fmt,pct}){
                   <thead><tr>{ths}</tr></thead>
                   <tbody>{row.rBonuses.map((b,j)=>(
                     <tr key={j} style={{borderBottom:"0.5px solid var(--color-border-tertiary)"}}>
-                      <td style={{padding:"3px 8px"}}>{b.name||"â"}</td>
+                      <td style={{padding:"3px 8px"}}>{b.name||"—"}</td>
                       <td style={{textAlign:"right",padding:"3px 8px"}}>{fmt(b.amount)}</td>
                       <td style={{padding:"3px 8px",color:"#888"}}>{b.isNet?"Net":"Gross"}</td>
                       <td style={{textAlign:"right",padding:"3px 8px",fontWeight:500}}>{fmt(b.grossAmt)}</td>
-                      <td style={{textAlign:"right",padding:"3px 8px",color:"green",fontWeight:500}}>{b.taxAllow>0?fmt(b.taxAllow):"â"}</td>
+                      <td style={{textAlign:"right",padding:"3px 8px",color:"green",fontWeight:500}}>{b.taxAllow>0?fmt(b.taxAllow):"—"}</td>
                     </tr>
                   ))}</tbody>
                 </table>
@@ -283,7 +283,7 @@ function Login({ onSuccess }: { onSuccess: () => void }){
 }
 
 function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
-  const[emp,setEmp]=useState({name:"",npwp:"",hasNpwp:true,ptkp:"TK/0",startMonth:0,endMonth:11,isExpat:false,salaryType:"gross",hasTaxAllowance:false,bpjsEnabled:true,bpjsAllowEnabled:false,jkkGroup:"I â Sangat Rendah (0.24%)",bpjsKesEnabled:true,jpCapOld:JP_OLD.toString(),jpCapNew:JP_NEW.toString(),year:new Date().getFullYear().toString()});
+  const[emp,setEmp]=useState({name:"",npwp:"",hasNpwp:true,ptkp:"TK/0",startMonth:0,endMonth:11,isExpat:false,salaryType:"gross",hasTaxAllowance:false,bpjsEnabled:true,bpjsAllowEnabled:false,jkkGroup:"I — Sangat Rendah (0.24%)",bpjsKesEnabled:true,jpCapOld:JP_OLD.toString(),jpCapNew:JP_NEW.toString(),year:new Date().getFullYear().toString()});
   const[salaryHistory,setSalaryHistory]=useState([{id:uid(),month:0,amount:"10000000"}]);
   const[allows,setAllows]=useState([]);
   const[bonuses,setBonuses]=useState([]);
@@ -369,12 +369,12 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
     X.utils.book_append_sheet(wb,ws,"Monthly Payroll");
     if(bonuses.length>0){
       const bh=["Name","Month","Input","IsNet","GrossAmt","TaxAllow","TERBase","TER%","PPh21"];
-      const br=[bh,...bonuses.map(b=>{const mi=parseInt(b.month),row=payroll[mi],found=row?.rBonuses?.find(x=>x.id===b.id);return[b.name||"â",MN[mi],parseFloat(b.amount)||0,b.isNet?"Yes":"No",found?.grossAmt||0,found?.taxAllow||0,row?.terBase||0,row?parseFloat((row.ter*100).toFixed(4)):0,row?.pph21||0];})];
+      const br=[bh,...bonuses.map(b=>{const mi=parseInt(b.month),row=payroll[mi],found=row?.rBonuses?.find(x=>x.id===b.id);return[b.name||"—",MN[mi],parseFloat(b.amount)||0,b.isNet?"Yes":"No",found?.grossAmt||0,found?.taxAllow||0,row?.terBase||0,row?parseFloat((row.ter*100).toFixed(4)):0,row?.pph21||0];})];
       const ws2=X.utils.aoa_to_sheet(br);X.utils.book_append_sheet(wb,ws2,"Bonuses");
     }
     if(allows.length>0){
       const ah=["Name","Start","End","Months","Amount","Taxable","IsNet","Total"];
-      const ar=[ah,...allows.map(a=>{const as=parseInt(a.startMonth),ae=parseInt(a.endMonth),cnt=valid.filter(r=>r.m>=as&&r.m<=ae).length;return[a.name||"â",MN[as],MN[ae],cnt,parseFloat(a.amount)||0,a.taxable?"Yes":"No",a.isNet?"Yes":"No",(parseFloat(a.amount)||0)*cnt];})];
+      const ar=[ah,...allows.map(a=>{const as=parseInt(a.startMonth),ae=parseInt(a.endMonth),cnt=valid.filter(r=>r.m>=as&&r.m<=ae).length;return[a.name||"—",MN[as],MN[ae],cnt,parseFloat(a.amount)||0,a.taxable?"Yes":"No",a.isNet?"Yes":"No",(parseFloat(a.amount)||0)*cnt];})];
       const ws3=X.utils.aoa_to_sheet(ar);X.utils.book_append_sheet(wb,ws3,"Allowances");
     }
     const sh=["Month","Type","Amount"];
@@ -384,7 +384,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
     const bpr=[bph,...valid.map(r=>[MN[r.m],r.m<2?jpOld:jpNew,r.bpjs.jkkEr,r.bpjs.jkmEr,r.bpjs.kesEr,r.erTaxable,r.bpjs.jhtEr,r.bpjs.jpEr,r.bpjs.jhtEmp,r.bpjs.jpEmp,r.bpjs.kesEmp,r.bpjs.jhtEr+r.bpjs.jpEr+r.bpjs.jkkEr+r.bpjs.jkmEr+r.bpjs.kesEr,r.bpjs.jhtEmp+r.bpjs.jpEmp+r.bpjs.kesEmp])];
     const ws5=X.utils.aoa_to_sheet(bpr);X.utils.book_append_sheet(wb,ws5,"BPJS Breakdown");
     const fd=last?.finalData;
-    const ann=[[`TAX ANNUALIZATION â ${emp.name||"Employee"} (${emp.year})`],[""],["Field","Value"],["Name",emp.name||"â"],["NPWP",emp.npwp||"â"],["PTKP",emp.ptkp],["PTKP Amt",PTKP[emp.ptkp]||54000000],["TER Cat",terCat],["Expat",emp.isExpat?"Yes":"No"],["NPWP surcharge",emp.hasNpwp?"No":"Yes"],[""],["1. Annual taxable gross",fd?.annGross||0],["2. Less Biaya Jabatan",fd?.bjAnn||0],["3. Less PTKP",fd?.ptkpAmt||0],["4. PKP",fd?.pkpAnn||0],[""],["5. Pasal 17"],  ...(fd?.rows||[]).map(b=>[`${fmt(b.from)}â${fmt(b.from+b.chunk)}`,`${(b.rate*100).toFixed(0)}%`,Math.round(b.tax)]),[""],["6. Annual PPh21",fd?.annTax||0],["7. Prior withheld",fd?.prior||0],["8. Due "+MN[endM],Math.max(0,fd?.due||0)],["9. Refund",fd?.refund||0]];
+    const ann=[[`TAX ANNUALIZATION — ${emp.name||"Employee"} (${emp.year})`],[""],["Field","Value"],["Name",emp.name||"—"],["NPWP",emp.npwp||"—"],["PTKP",emp.ptkp],["PTKP Amt",PTKP[emp.ptkp]||54000000],["TER Cat",terCat],["Expat",emp.isExpat?"Yes":"No"],["NPWP surcharge",emp.hasNpwp?"No":"Yes"],[""],["1. Annual taxable gross",fd?.annGross||0],["2. Less Biaya Jabatan",fd?.bjAnn||0],["3. Less PTKP",fd?.ptkpAmt||0],["4. PKP",fd?.pkpAnn||0],[""],["5. Pasal 17"],  ...(fd?.rows||[]).map(b=>[`${fmt(b.from)}–${fmt(b.from+b.chunk)}`,`${(b.rate*100).toFixed(0)}%`,Math.round(b.tax)]),[""],["6. Annual PPh21",fd?.annTax||0],["7. Prior withheld",fd?.prior||0],["8. Due "+MN[endM],Math.max(0,fd?.due||0)],["9. Refund",fd?.refund||0]];
     const ws6=X.utils.aoa_to_sheet(ann);ws6["!cols"]=[{wch:48},{wch:18},{wch:20}];
     X.utils.book_append_sheet(wb,ws6,"Tax Annualization");
     const wbout=X.write(wb,{bookType:"xlsx",type:"array"});
@@ -411,8 +411,8 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
     <div style={{fontFamily:"var(--font-sans)",fontSize:14,color:"var(--color-text-primary)",maxWidth:1200,margin:"0 auto",padding:"1rem 0"}}>
       <h2 style={{fontSize:18,fontWeight:500,margin:"0 0 4px"}}>Indonesia payroll calculator</h2>
       <p style={{fontSize:12,color:"var(--color-text-secondary)",margin:"0 0 16px"}}>
-        PPh 21 TER PMK 168/2023 Â· BPJS TK + Kesehatan Â· Net gross-up Â· Expat Â· BPJS Allowance Â· Pasal 17 finalization
-        <span style={{marginLeft:8,padding:"2px 8px",background:"var(--color-background-info)",color:"var(--color-text-info)",borderRadius:"var(--border-radius-md)",fontSize:11}}>TER {terCat} Â· {emp.ptkp}{emp.isExpat?" Â· EXPAT":""}</span>
+        PPh 21 TER PMK 168/2023 · BPJS TK + Kesehatan · Net gross-up · Expat · BPJS Allowance · Pasal 17 finalization
+        <span style={{marginLeft:8,padding:"2px 8px",background:"var(--color-background-info)",color:"var(--color-text-info)",borderRadius:"var(--border-radius-md)",fontSize:11}}>TER {terCat} · {emp.ptkp}{emp.isExpat?" · EXPAT":""}</span>
       </p>
 
       <div style={{borderBottom:"0.5px solid var(--color-border-tertiary)",marginBottom:20,display:"flex",gap:4,flexWrap:"wrap",alignItems:"center"}}>
@@ -421,7 +421,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
             {t==="setup"?"Employee setup":t==="allowances"?`Allowances${allows.length?` (${allows.length})`:""}`:t==="bonuses"?`Bonuses${bonuses.length?` (${bonuses.length})`:""}`:t==="monthly"?"Monthly payroll":t==="summary"?"Year summary":"Tax annualization"}
           </button>
         ))}
-        <button onClick={exportExcel} disabled={!xlsxReady} style={{marginLeft:"auto",padding:"6px 16px",fontSize:13,background:"var(--color-background-info)",color:"var(--color-text-info)",border:"0.5px solid var(--color-border-info)",borderRadius:"var(--border-radius-md)",cursor:xlsxReady?"pointer":"not-allowed",opacity:xlsxReady?1:0.5}}>{xlsxReady?"Export Excel":"Loadingâ¦"}</button>
+        <button onClick={exportExcel} disabled={!xlsxReady} style={{marginLeft:"auto",padding:"6px 16px",fontSize:13,background:"var(--color-background-info)",color:"var(--color-text-info)",border:"0.5px solid var(--color-border-info)",borderRadius:"var(--border-radius-md)",cursor:xlsxReady?"pointer":"not-allowed",opacity:xlsxReady?1:0.5}}>{xlsxReady?"Export Excel":"Loading…"}</button>
         <button onClick={onSignOut} style={{padding:"6px 12px",fontSize:12,fontFamily:"var(--font-sans)",color:"var(--color-text-secondary)",background:"transparent",border:"0.5px solid var(--color-border-tertiary)",borderRadius:"var(--border-radius-md)",cursor:"pointer"}}>Sign out</button>
       </div>
 
@@ -437,7 +437,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
           </div>
           <div><label style={lbl}>PTKP status</label>
             <select value={emp.ptkp} onChange={e=>upd("ptkp",e.target.value)} style={{width:"100%",boxSizing:"border-box"}}>
-              {Object.keys(PTKP).map(k=><option key={k} value={k}>{k} â {fmt(PTKP[k])}/year [TER {getTERCat(k)}]</option>)}
+              {Object.keys(PTKP).map(k=><option key={k} value={k}>{k} — {fmt(PTKP[k])}/year [TER {getTERCat(k)}]</option>)}
             </select>
           </div>
           <div></div>
@@ -448,7 +448,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
           </div>
           <div><label style={lbl}>Tax finalization / end month</label>
             <select value={emp.endMonth} onChange={e=>upd("endMonth",parseInt(e.target.value))} style={{width:"100%",boxSizing:"border-box"}}>
-              {MN.map((m,i)=><option key={i} value={i} disabled={i<startM}>{m}{i===11?" (Dec â standard)":""}</option>)}
+              {MN.map((m,i)=><option key={i} value={i} disabled={i<startM}>{m}{i===11?" (Dec — standard)":""}</option>)}
             </select>
           </div>
           <div><label style={lbl}>Salary type</label>
@@ -485,7 +485,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
                   </div>
                   <div style={{paddingBottom:2}}>
                     <label style={{...lbl,color:"transparent"}}>.</label>
-                    {!isFirst?<button onClick={()=>setSalaryHistory(h=>h.filter(x=>x.id!==s.id))} style={{fontSize:13,padding:"6px 10px",color:"var(--color-text-danger)",border:"none",background:"transparent",cursor:"pointer"}}>â</button>:<div style={{width:36}}/>}
+                    {!isFirst?<button onClick={()=>setSalaryHistory(h=>h.filter(x=>x.id!==s.id))} style={{fontSize:13,padding:"6px 10px",color:"var(--color-text-danger)",border:"none",background:"transparent",cursor:"pointer"}}>✕</button>:<div style={{width:36}}/>}
                   </div>
                 </div>
               );
@@ -494,7 +494,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
               <div style={{marginTop:8,fontSize:11,display:"flex",flexWrap:"wrap",gap:4}}>
                 {sortedSalary.map((s,idx)=>{
                   const from=parseInt(s.month),to=idx<sortedSalary.length-1?parseInt(sortedSalary[idx+1].month)-1:endM;
-                  return <span key={s.id} style={{padding:"2px 8px",background:"var(--color-background-info)",color:"var(--color-text-info)",borderRadius:"var(--border-radius-md)"}}>{MN[from]}{from!==to?`â${MN[to]}`:""}: {fmt(parseFloat(s.amount)||0)}</span>;
+                  return <span key={s.id} style={{padding:"2px 8px",background:"var(--color-background-info)",color:"var(--color-text-info)",borderRadius:"var(--border-radius-md)"}}>{MN[from]}{from!==to?`–${MN[to]}`:""}: {fmt(parseFloat(s.amount)||0)}</span>;
                 })}
               </div>
             )}
@@ -508,16 +508,16 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
                   {Object.keys(JKK_R).map(k=><option key={k}>{k}</option>)}
                 </select>
               </div>
-              <div><label style={lbl}>JP cap JanâFeb (Rp)</label><input type="number" value={emp.jpCapOld} onChange={e=>upd("jpCapOld",e.target.value)} style={{width:"100%",boxSizing:"border-box"}} /></div>
-              <div><label style={lbl}>JP cap MarâDec (Rp)</label><input type="number" value={emp.jpCapNew} onChange={e=>upd("jpCapNew",e.target.value)} style={{width:"100%",boxSizing:"border-box"}} /></div>
-              <div style={{gridColumn:"1/-1",fontSize:11,color:"var(--color-text-secondary)"}}>JHT: Er 3.7% + Emp 2% Â· JP: Er 2% + Emp 1% (capped{emp.isExpat?", exempt for expat":""}) Â· JKM: Er 0.3%</div>
+              <div><label style={lbl}>JP cap Jan–Feb (Rp)</label><input type="number" value={emp.jpCapOld} onChange={e=>upd("jpCapOld",e.target.value)} style={{width:"100%",boxSizing:"border-box"}} /></div>
+              <div><label style={lbl}>JP cap Mar–Dec (Rp)</label><input type="number" value={emp.jpCapNew} onChange={e=>upd("jpCapNew",e.target.value)} style={{width:"100%",boxSizing:"border-box"}} /></div>
+              <div style={{gridColumn:"1/-1",fontSize:11,color:"var(--color-text-secondary)"}}>JHT: Er 3.7% + Emp 2% · JP: Er 2% + Emp 1% (capped{emp.isExpat?", exempt for expat":""}) · JKM: Er 0.3%</div>
             </div>}
-            <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13,marginBottom:6}}><input type="checkbox" checked={emp.bpjsAllowEnabled} onChange={e=>upd("bpjsAllowEnabled",e.target.checked)} />Employer bears employee BPJS share (BPJS Allowance â taxable income)</label>
+            <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13,marginBottom:6}}><input type="checkbox" checked={emp.bpjsAllowEnabled} onChange={e=>upd("bpjsAllowEnabled",e.target.checked)} />Employer bears employee BPJS share (BPJS Allowance — taxable income)</label>
             {emp.bpjsAllowEnabled&&<p style={{fontSize:11,color:"var(--color-text-secondary)",marginLeft:22,marginTop:0}}>Adds JHT Emp + JP Emp + Kes Emp as taxable allowance. Included in TER base.</p>}
           </div>
           <div style={{gridColumn:"1/-1"}}>
             <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13}}><input type="checkbox" checked={emp.bpjsKesEnabled} onChange={e=>upd("bpjsKesEnabled",e.target.checked)} />Enable BPJS Kesehatan (Er 4% + Emp 1%, base capped at {fmt(KES_CAP)}/month)</label>
-            {emp.bpjsKesEnabled&&<p style={{fontSize:11,color:"var(--color-text-secondary)",marginLeft:22,marginTop:4}}>Max employer: {fmt(KES_CAP*.04)}/month Â· Max employee: {fmt(KES_CAP*.01)}/month Â· Employer share included in taxable Er BPJS</p>}
+            {emp.bpjsKesEnabled&&<p style={{fontSize:11,color:"var(--color-text-secondary)",marginLeft:22,marginTop:4}}>Max employer: {fmt(KES_CAP*.04)}/month · Max employee: {fmt(KES_CAP*.01)}/month · Employer share included in taxable Er BPJS</p>}
           </div>
         </div>
       )}
@@ -526,7 +526,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
       {tab==="allowances"&&(
         <div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-            <p style={{fontSize:13,color:"var(--color-text-secondary)",margin:0}}>Set period, tax treatment, and gross/net. Net allowances are grossed up using that month's TER â individual tax allowances shown per item.</p>
+            <p style={{fontSize:13,color:"var(--color-text-secondary)",margin:0}}>Set period, tax treatment, and gross/net. Net allowances are grossed up using that month's TER — individual tax allowances shown per item.</p>
             <button onClick={addAllow} style={{fontSize:13,padding:"6px 14px"}}>+ Add allowance</button>
           </div>
           {allows.length===0&&<div style={{padding:"32px 0",textAlign:"center",color:"var(--color-text-secondary)",fontSize:13}}>No allowances added.</div>}
@@ -559,13 +559,13 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
                     </select>
                   </div>
                   <div style={{paddingBottom:2}}><label style={{...lbl,color:"transparent"}}>.</label>
-                    <button onClick={()=>remAllow(a.id)} style={{fontSize:13,padding:"6px 10px",color:"var(--color-text-danger)",border:"none",background:"transparent",cursor:"pointer"}}>â</button>
+                    <button onClick={()=>remAllow(a.id)} style={{fontSize:13,padding:"6px 10px",color:"var(--color-text-danger)",border:"none",background:"transparent",cursor:"pointer"}}>✕</button>
                   </div>
                 </div>
                 <div style={{marginTop:8,fontSize:11,color:"var(--color-text-secondary)",display:"flex",gap:14,flexWrap:"wrap"}}>
-                  <span>{MN[parseInt(a.startMonth)]}â{MN[parseInt(a.endMonth)]} ({Math.max(0,parseInt(a.endMonth)-parseInt(a.startMonth)+1)} months)</span>
-                  <span>{a.taxable?(a.isNet?"Net â grossed up":"Gross â taxable"):"Non-taxable"}</span>
-                  {preview&&a.isNet&&a.taxable&&<span style={{color:"var(--color-text-primary)"}}>Gross: <strong>{fmt(preview.grossAmt)}</strong> Â· Tax allow: <strong style={{color:"green"}}>{fmt(preview.taxAllow)}</strong> (from {MN[firstM.m]})</span>}
+                  <span>{MN[parseInt(a.startMonth)]}–{MN[parseInt(a.endMonth)]} ({Math.max(0,parseInt(a.endMonth)-parseInt(a.startMonth)+1)} months)</span>
+                  <span>{a.taxable?(a.isNet?"Net — grossed up":"Gross — taxable"):"Non-taxable"}</span>
+                  {preview&&a.isNet&&a.taxable&&<span style={{color:"var(--color-text-primary)"}}>Gross: <strong>{fmt(preview.grossAmt)}</strong> · Tax allow: <strong style={{color:"green"}}>{fmt(preview.taxAllow)}</strong> (from {MN[firstM.m]})</span>}
                 </div>
               </div>
             );
@@ -602,18 +602,18 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
                     </select>
                   </div>
                   <div style={{paddingBottom:2}}><label style={{...lbl,color:"transparent"}}>.</label>
-                    <button onClick={()=>remBonus(b.id)} style={{fontSize:13,padding:"6px 10px",color:"var(--color-text-danger)",border:"none",background:"transparent",cursor:"pointer"}}>â</button>
+                    <button onClick={()=>remBonus(b.id)} style={{fontSize:13,padding:"6px 10px",color:"var(--color-text-danger)",border:"none",background:"transparent",cursor:"pointer"}}>✕</button>
                   </div>
                 </div>
                 <div style={{marginTop:8,fontSize:11,display:"flex",gap:14,flexWrap:"wrap",color:"var(--color-text-secondary)"}}>
                   {row&&!isFinMonth&&found&&(
                     <>
                       <span>Input: <strong>{fmt(parseFloat(b.amount)||0)}</strong> ({b.isNet?"net":"gross"})</span>
-                      {b.isNet&&<span style={{color:"var(--color-text-primary)"}}>Grossed-up: <strong>{fmt(found.grossAmt)}</strong> Â· Tax allow: <strong style={{color:"green"}}>{fmt(found.taxAllow)}</strong></span>}
-                      <span>TER base: <strong>{fmt(row.terBase)}</strong> Â· TER: <strong>{pct(row.ter)}</strong> Â· PPh 21: <strong>{fmt(row.pph21)}</strong></span>
+                      {b.isNet&&<span style={{color:"var(--color-text-primary)"}}>Grossed-up: <strong>{fmt(found.grossAmt)}</strong> · Tax allow: <strong style={{color:"green"}}>{fmt(found.taxAllow)}</strong></span>}
+                      <span>TER base: <strong>{fmt(row.terBase)}</strong> · TER: <strong>{pct(row.ter)}</strong> · PPh 21: <strong>{fmt(row.pph21)}</strong></span>
                     </>
                   )}
-                  {isFinMonth&&<span style={{color:"orange"}}>â  In finalization month â included in Pasal 17 recalculation</span>}
+                  {isFinMonth&&<span style={{color:"orange"}}>⚠ In finalization month — included in Pasal 17 recalculation</span>}
                 </div>
               </div>
             );
@@ -647,7 +647,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
                 {emp.bpjsKesEnabled&&<th style={th}>Kes emp</th>}
                 <th style={{...th,fontWeight:600}}>Emp deduct.</th>
                 <th style={{...th,fontWeight:600,color:"green"}}>Net pay</th>
-                <th style={{...th,textAlign:"center"}}>â¼</th>
+                <th style={{...th,textAlign:"center"}}>▼</th>
               </tr>
             </thead>
             <tbody>
@@ -681,7 +681,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
             </tfoot>
           </table>
           {last?.finalData&&<div style={{marginTop:10,padding:"8px 12px",background:"var(--color-background-warning)",borderRadius:"var(--border-radius-md)",fontSize:12}}>
-            â {MN[endM]} = Pasal 17 finalization. {last.finalData.refund>0?<span style={{color:"green",fontWeight:500}}>Est. refund: {fmt(last.finalData.refund)}</span>:<span>Additional payable: {fmt(Math.max(0,last.finalData.due))}</span>}
+            ★ {MN[endM]} = Pasal 17 finalization. {last.finalData.refund>0?<span style={{color:"green",fontWeight:500}}>Est. refund: {fmt(last.finalData.refund)}</span>:<span>Additional payable: {fmt(Math.max(0,last.finalData.due))}</span>}
           </div>}
         </div>
       )}
@@ -699,22 +699,22 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
             {card("Total net take-home",totNet)}
             {last?.finalData?.refund>0&&card("Est. tax refund",last.finalData.refund)}
           </div>
-          <p style={{fontSize:13,fontWeight:500,marginBottom:12}}>BPJS â employee</p>
+          <p style={{fontSize:13,fontWeight:500,marginBottom:12}}>BPJS — employee</p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(155px,1fr))",gap:12,marginBottom:24}}>
             {card("JHT employee (2%)",valid.reduce((s,m)=>s+m.bpjs.jhtEmp,0))}
             {card("JP employee (1%)",valid.reduce((s,m)=>s+m.bpjs.jpEmp,0),emp.isExpat?"exempt (expat)":"JP wage cap")}
             {card("BpjsKes employee (1%)",valid.reduce((s,m)=>s+m.bpjs.kesEmp,0),emp.bpjsKesEnabled?"cap Rp 12jt":"disabled")}
             {card("Total employee BPJS",valid.reduce((s,m)=>s+m.bpjs.jhtEmp+m.bpjs.jpEmp+m.bpjs.kesEmp,0))}
           </div>
-          <p style={{fontSize:13,fontWeight:500,marginBottom:12}}>BPJS â employer</p>
+          <p style={{fontSize:13,fontWeight:500,marginBottom:12}}>BPJS — employer</p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(155px,1fr))",gap:12,marginBottom:24}}>
             {card("JHT employer (3.7%)",valid.reduce((s,m)=>s+m.bpjs.jhtEr,0))}
             {card("JP employer (2%)",valid.reduce((s,m)=>s+m.bpjs.jpEr,0),emp.isExpat?"exempt (expat)":"JP wage cap")}
             {card("JKK employer",valid.reduce((s,m)=>s+m.bpjs.jkkEr,0),"taxable to employee")}
             {card("JKM employer (0.3%)",valid.reduce((s,m)=>s+m.bpjs.jkmEr,0),"taxable to employee")}
-            {card("BpjsKes employer (4%)",valid.reduce((s,m)=>s+m.bpjs.kesEr,0),emp.bpjsKesEnabled?"cap Rp 12jt Â· taxable":"disabled")}
+            {card("BpjsKes employer (4%)",valid.reduce((s,m)=>s+m.bpjs.kesEr,0),emp.bpjsKesEnabled?"cap Rp 12jt · taxable":"disabled")}
             {card("Total employer BPJS",valid.reduce((s,m)=>s+m.bpjs.jhtEr+m.bpjs.jpEr+m.bpjs.jkkEr+m.bpjs.jkmEr+m.bpjs.kesEr,0))}
-            {card("Taxable Er BPJS",valid.reduce((s,m)=>s+m.erTaxable,0),"JKK+JKM+KesEr â TER base")}
+            {card("Taxable Er BPJS",valid.reduce((s,m)=>s+m.erTaxable,0),"JKK+JKM+KesEr → TER base")}
           </div>
           <p style={{fontSize:13,fontWeight:500,marginBottom:10}}>BPJS month-by-month</p>
           <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
@@ -747,7 +747,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
               return(
                 <div>
                   <p style={{fontSize:13,fontWeight:500,marginBottom:16}}>
-                    Tax annualization â {emp.name||"Employee"} Â· {emp.ptkp} Â· TER {terCat} Â· {MN[startM]}â{MN[endM]} {emp.year}
+                    Tax annualization — {emp.name||"Employee"} · {emp.ptkp} · TER {terCat} · {MN[startM]}–{MN[endM]} {emp.year}
                     {emp.isExpat&&<span style={{marginLeft:8,background:"var(--color-background-info)",color:"var(--color-text-info)",fontSize:11,padding:"2px 8px",borderRadius:"var(--border-radius-md)"}}>Expat (JP exempt)</span>}
                     {!emp.hasNpwp&&<span style={{marginLeft:8,background:"var(--color-background-danger)",color:"var(--color-text-danger)",fontSize:11,padding:"2px 8px",borderRadius:"var(--border-radius-md)"}}>No NPWP: 20% surcharge</span>}
                   </p>
@@ -778,19 +778,19 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
                       ))}
                     </tbody>
                   </table>
-                  <p style={{fontSize:12,fontWeight:500,color:"var(--color-text-secondary)",marginBottom:8}}>Pasal 17 progressive tax â PKP = {fmt(fd.pkpAnn)}</p>
+                  <p style={{fontSize:12,fontWeight:500,color:"var(--color-text-secondary)",marginBottom:8}}>Pasal 17 progressive tax — PKP = {fmt(fd.pkpAnn)}</p>
                   <table style={{width:"100%",borderCollapse:"collapse",fontSize:13,marginBottom:20}}>
                     <thead><tr>{["Income layer","Rate","Tax on layer"].map(h=><th key={h} style={{...th,textAlign:h==="Income layer"?"left":"right"}}>{h}</th>)}</tr></thead>
                     <tbody>
                       {fd.rows.map((b,i)=>(
                         <tr key={i} style={{borderBottom:"0.5px solid var(--color-border-tertiary)"}}>
-                          <td style={{padding:"7px 8px",color:"var(--color-text-secondary)"}}>{fmt(b.from)} â {fmt(b.from+b.chunk)} ({fmt(b.chunk)})</td>
+                          <td style={{padding:"7px 8px",color:"var(--color-text-secondary)"}}>{fmt(b.from)} – {fmt(b.from+b.chunk)} ({fmt(b.chunk)})</td>
                           <td style={{textAlign:"right",padding:"7px 8px"}}>{(b.rate*100).toFixed(0)}%</td>
                           <td style={{textAlign:"right",padding:"7px 8px",fontWeight:500}}>{fmt(b.tax)}</td>
                         </tr>
                       ))}
                       <tr style={{borderTop:"1px solid var(--color-border-primary)",fontWeight:500}}>
-                        <td style={{padding:"7px 8px"}}>Total annual PPh 21 (rounded â Rp 100){!emp.hasNpwp?" Ã 1.20":""}</td>
+                        <td style={{padding:"7px 8px"}}>Total annual PPh 21 (rounded ↓ Rp 100){!emp.hasNpwp?" × 1.20":""}</td>
                         <td/><td style={{textAlign:"right",padding:"7px 8px"}}>{fmt(fd.annTax)}</td>
                       </tr>
                     </tbody>
@@ -800,7 +800,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
                     <tbody>
                       {[
                         {l:"Annual PPh 21 (Pasal 17)",v:fd.annTax,bold:true},
-                        {l:`Less: tax withheld ${MN[startM]}${endM>startM?"â"+MN[endM-1]:""}`,v:-fd.prior,indent:true},
+                        {l:`Less: tax withheld ${MN[startM]}${endM>startM?"–"+MN[endM-1]:""}`,v:-fd.prior,indent:true},
                         {l:`PPh 21 payable in ${MN[endM]}`,v:Math.max(0,fd.due),bold:true},
                         ...(fd.refund>0?[{l:"Estimated refund",v:fd.refund,green:true,bold:true}]:[]),
                       ].map((r,i)=>(
@@ -820,7 +820,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
       )}
 
       <div style={{marginTop:20,padding:"8px 12px",background:"var(--color-background-secondary)",borderRadius:"var(--border-radius-md)",fontSize:11,color:"var(--color-text-secondary)"}}>
-        PMK 168/2023 (TER A/B/C) Â· PMK 101/2016 (PTKP) Â· PER-16/PJ/2015 (biaya jabatan; JKK+JKM+KesEr taxable) Â· PP 44/2015 &amp; PP 46/2015 (BPJS TK) Â· Perpres 82/2018 (BPJS Kes, cap Rp 12jt) Â· PP 55/2022 (natura) Â· JP: JanâFeb {fmt(jpOld)} / MarâDec {fmt(jpNew)}{emp.isExpat?" Â· JP exempt (expat)":""}
+        PMK 168/2023 (TER A/B/C) · PMK 101/2016 (PTKP) · PER-16/PJ/2015 (biaya jabatan; JKK+JKM+KesEr taxable) · PP 44/2015 &amp; PP 46/2015 (BPJS TK) · Perpres 82/2018 (BPJS Kes, cap Rp 12jt) · PP 55/2022 (natura) · JP: Jan–Feb {fmt(jpOld)} / Mar–Dec {fmt(jpNew)}{emp.isExpat?" · JP exempt (expat)":""}
       </div>
     </div>
   );
