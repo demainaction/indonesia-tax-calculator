@@ -32,6 +32,12 @@ function bracketRows(pkp){const rows=[];let r=pkp,base=0;for(const b of P17){if(
 function getSalary(hist,m){let v=0;for(const s of hist){if(parseInt(s.month)<=m)v=parseFloat(s.amount)||0;else break;}return v;}
 function grossUpItem(net,ter){return ter<1?net/(1-ter):net;}
 
+// Plain-text input that displays Rp amounts with thousand separators while storing a raw digit string
+function NumberInput({value,onChange,style}){
+  const display=value===""?"":Number(value).toLocaleString("id-ID");
+  return <input type="text" inputMode="numeric" value={display} onChange={e=>onChange(e.target.value.replace(/\D/g,""))} style={style} />;
+}
+
 function computeBPJS(g,jkkRate,jpCap,isExpat,bpjsEnabled,kesEnabled){
   let jhtEr=0,jhtEmp=0,jpEr=0,jpEmp=0,jkkEr=0,jkmEr=0,kesEr=0,kesEmp=0;
   if(bpjsEnabled){
@@ -59,7 +65,7 @@ function resolveMonth(cfg){
       const grossBonus=bonusItems.filter(a=>!a.isNet).reduce((s,a)=>s+a.amount,0);
       const terBase=g+fixedTA+bpjsAllow+erTax+grossBonus;
       const ter=lookupTER(terBase,ptkp);
-      const pph=rd100(terBase*ter*npwpM);
+      const pph=terBase*ter*npwpM;
       const ng=salaryInput+pph+b.jhtEmp+b.jpEmp+b.kesEmp;
       if(Math.abs(ng-g)<0.5)break;
       g=ng;
@@ -111,7 +117,7 @@ function resolveMonth(cfg){
   let taxAllow2=0,pph21=0,annTax=0,refund=0,finalData=null;
   if(!isEndMonth){
     taxAllow2=salaryType==="net"&&hasTaxAllowance?grossUpItem(terBase*ter,ter):0;
-    pph21=rd100((terBase+taxAllow2)*ter*npwpM);
+    pph21=(terBase+taxAllow2)*ter*npwpM;
   } else {
     const annGross=cumGross+terBase;
     const bjAnn=Math.min(annGross*.05,6000000);
@@ -143,11 +149,11 @@ function MonthRow({mn,i,row,active,isFin,isExp,onToggle,emp,fmt,pct}){
       <td style={s}>{active?fmt(row.gross):"—"}</td>
       {emp.bpjsAllowEnabled&&<td style={{...s,color:"var(--color-text-warning)"}}>{active&&row.bpjsAllow>0?fmt(row.bpjsAllow):"—"}</td>}
       <td style={{...s,color:"var(--color-text-secondary)"}}>{active&&row.erTaxable>0?fmt(row.erTaxable):"—"}</td>
+      <td style={s}>{active&&row.totalTaxableGross>0?fmt(row.totalTaxableGross):"—"}</td>
       <td style={{...s,fontWeight:600}}>{active?fmt(row.terBase):"—"}</td>
       <td style={s}>{active?pct(row.ter):"—"}</td>
       <td style={{...s,color:"var(--color-text-success)"}}>{active&&row.taxAllow2>0?fmt(row.taxAllow2):"—"}</td>
       <td style={{...s,color:"var(--color-text-success)"}}>{active&&row.totalTAItems>0?fmt(row.totalTAItems):"—"}</td>
-      <td style={s}>{active&&row.totalTaxableGross>0?fmt(row.totalTaxableGross):"—"}</td>
       <td style={s}>{active&&row.nonTaxableAllow>0?fmt(row.nonTaxableAllow):"—"}</td>
       <td style={{...s,color:"var(--color-text-info)"}}>{active&&row.totalBonusGross>0?fmt(row.totalBonusGross):"—"}</td>
       <td style={{...s,fontWeight:600}}>{active?fmt(row.pph21):"—"}</td>
@@ -162,7 +168,7 @@ function MonthRow({mn,i,row,active,isFin,isExp,onToggle,emp,fmt,pct}){
     </tr>
   );
   if(!active||!isExp||!showBtn) return mainTr;
-  const ths=["Name","Input","Type","Gross","Tax allow"].map(h=><th key={h} style={{textAlign:"right",padding:"3px 8px",fontSize:11,color:"#888",fontWeight:500}}>{h}</th>);
+  const ths=["Name","Input","Type","Gross","Tax Allowance"].map(h=><th key={h} style={{textAlign:"right",padding:"3px 8px",fontSize:11,color:"#888",fontWeight:500}}>{h}</th>);
   return (
     <React.Fragment>
       {mainTr}
@@ -208,9 +214,9 @@ function MonthRow({mn,i,row,active,isFin,isExp,onToggle,emp,fmt,pct}){
                 <p style={{fontSize:11,fontWeight:500,marginBottom:6,color:"#888"}}>BPJS ALLOWANCE</p>
                 <table style={{borderCollapse:"collapse",fontSize:11.5}}>
                   <tbody>
-                    <tr><td style={{padding:"3px 8px",color:"#888"}}>JHT emp 2%</td><td style={{textAlign:"right",padding:"3px 8px"}}>{fmt(row.bpjs.jhtEmp)}</td></tr>
-                    <tr><td style={{padding:"3px 8px",color:"#888"}}>JP emp 1%</td><td style={{textAlign:"right",padding:"3px 8px"}}>{fmt(row.bpjs.jpEmp)}</td></tr>
-                    {emp.bpjsKesEnabled&&<tr><td style={{padding:"3px 8px",color:"#888"}}>Kes emp 1%</td><td style={{textAlign:"right",padding:"3px 8px"}}>{fmt(row.bpjs.kesEmp)}</td></tr>}
+                    <tr><td style={{padding:"3px 8px",color:"#888"}}>JHT employee 2%</td><td style={{textAlign:"right",padding:"3px 8px"}}>{fmt(row.bpjs.jhtEmp)}</td></tr>
+                    <tr><td style={{padding:"3px 8px",color:"#888"}}>JP employee 1%</td><td style={{textAlign:"right",padding:"3px 8px"}}>{fmt(row.bpjs.jpEmp)}</td></tr>
+                    {emp.bpjsKesEnabled&&<tr><td style={{padding:"3px 8px",color:"#888"}}>Kes employee 1%</td><td style={{textAlign:"right",padding:"3px 8px"}}>{fmt(row.bpjs.kesEmp)}</td></tr>}
                     <tr style={{fontWeight:500}}><td style={{padding:"3px 8px"}}>Total</td><td style={{textAlign:"right",padding:"3px 8px",color:"orange"}}>{fmt(row.bpjsAllow)}</td></tr>
                   </tbody>
                 </table>
@@ -359,7 +365,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
   const exportExcel=()=>{
     if(!window.XLSX||!xlsxReady)return;
     const X=window.XLSX,wb=X.utils.book_new();
-    const h=["Month","Salary Input","Gross","BPJS Allow","Er BPJS Taxable","TER Base","TER%","PPh21","TaxAllow(salary)","TaxAllow(items)","JHTEmp","JPEmp","KesEmp","EmpDeduct","NetPay","JHTEr","JPEr","JKKEr","JKMEr","KesEr","ErCost"];
+    const h=["Month","Salary Input","Gross","BPJS Allowance","Employer BPJS Taxable","TER Base","TER%","PPh21","Tax Allowance (Salary)","Tax Allowance (Items)","JHT Employee","JP Employee","Kes Employee","Employee Deduction","Net Pay","JHT Employer","JP Employer","JKK Employer","JKM Employer","Kes Employer","Employer Cost"];
     const rows=[h,...valid.map(r=>[MN[r.m],r.salaryInput,r.gross,r.bpjsAllow,r.erTaxable,r.terBase,parseFloat((r.ter*100).toFixed(4)),r.pph21,r.taxAllow2,r.totalTAItems,r.bpjs.jhtEmp,r.bpjs.jpEmp,r.bpjs.kesEmp,r.empDeduct,r.netPay,r.bpjs.jhtEr,r.bpjs.jpEr,r.bpjs.jkkEr,r.bpjs.jkmEr,r.bpjs.kesEr,r.erCost])];
     const de=1+valid.length;
     const sc=[1,2,3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
@@ -368,19 +374,19 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
     const ws=X.utils.aoa_to_sheet(rows);ws["!cols"]=h.map(()=>({wch:14}));
     X.utils.book_append_sheet(wb,ws,"Monthly Payroll");
     if(bonuses.length>0){
-      const bh=["Name","Month","Input","IsNet","GrossAmt","TaxAllow","TERBase","TER%","PPh21"];
+      const bh=["Name","Month","Input","Is Net","Gross Amount","Tax Allowance","TER Base","TER%","PPh21"];
       const br=[bh,...bonuses.map(b=>{const mi=parseInt(b.month),row=payroll[mi],found=row?.rBonuses?.find(x=>x.id===b.id);return[b.name||"—",MN[mi],parseFloat(b.amount)||0,b.isNet?"Yes":"No",found?.grossAmt||0,found?.taxAllow||0,row?.terBase||0,row?parseFloat((row.ter*100).toFixed(4)):0,row?.pph21||0];})];
       const ws2=X.utils.aoa_to_sheet(br);X.utils.book_append_sheet(wb,ws2,"Bonuses");
     }
     if(allows.length>0){
-      const ah=["Name","Start","End","Months","Amount","Taxable","IsNet","Total"];
+      const ah=["Name","Start","End","Months","Amount","Taxable","Is Net","Total"];
       const ar=[ah,...allows.map(a=>{const as=parseInt(a.startMonth),ae=parseInt(a.endMonth),cnt=valid.filter(r=>r.m>=as&&r.m<=ae).length;return[a.name||"—",MN[as],MN[ae],cnt,parseFloat(a.amount)||0,a.taxable?"Yes":"No",a.isNet?"Yes":"No",(parseFloat(a.amount)||0)*cnt];})];
       const ws3=X.utils.aoa_to_sheet(ar);X.utils.book_append_sheet(wb,ws3,"Allowances");
     }
     const sh=["Month","Type","Amount"];
     const sr=[sh,...sortedSalary.map(s=>[MN[parseInt(s.month)],emp.salaryType,parseFloat(s.amount)||0])];
     const ws4=X.utils.aoa_to_sheet(sr);X.utils.book_append_sheet(wb,ws4,"Salary History");
-    const bph=["Month","JPCap","JKKEr","JKMEr","KesEr","ErTaxable","JHTEr","JPEr","JHTEmp","JPEmp","KesEmp","TotalEr","TotalEmp"];
+    const bph=["Month","JP Cap","JKK Employer","JKM Employer","Kes Employer","Employer Taxable","JHT Employer","JP Employer","JHT Employee","JP Employee","Kes Employee","Total Employer","Total Employee"];
     const bpr=[bph,...valid.map(r=>[MN[r.m],r.m<2?jpOld:jpNew,r.bpjs.jkkEr,r.bpjs.jkmEr,r.bpjs.kesEr,r.erTaxable,r.bpjs.jhtEr,r.bpjs.jpEr,r.bpjs.jhtEmp,r.bpjs.jpEmp,r.bpjs.kesEmp,r.bpjs.jhtEr+r.bpjs.jpEr+r.bpjs.jkkEr+r.bpjs.jkmEr+r.bpjs.kesEr,r.bpjs.jhtEmp+r.bpjs.jpEmp+r.bpjs.kesEmp])];
     const ws5=X.utils.aoa_to_sheet(bpr);X.utils.book_append_sheet(wb,ws5,"BPJS Breakdown");
     const fd=last?.finalData;
@@ -481,7 +487,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
                   </div>
                   <div>
                     <label style={lbl}>{emp.salaryType==="gross"?"Gross":"Net"} salary (Rp/month)</label>
-                    <input type="number" value={s.amount} onChange={e=>updSalary(s.id,"amount",e.target.value)} style={{width:"100%",boxSizing:"border-box"}} />
+                    <NumberInput value={s.amount} onChange={v=>updSalary(s.id,"amount",v)} style={{width:"100%",boxSizing:"border-box"}} />
                   </div>
                   <div style={{paddingBottom:2}}>
                     <label style={{...lbl,color:"transparent"}}>.</label>
@@ -508,16 +514,16 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
                   {Object.keys(JKK_R).map(k=><option key={k}>{k}</option>)}
                 </select>
               </div>
-              <div><label style={lbl}>JP cap Jan–Feb (Rp)</label><input type="number" value={emp.jpCapOld} onChange={e=>upd("jpCapOld",e.target.value)} style={{width:"100%",boxSizing:"border-box"}} /></div>
-              <div><label style={lbl}>JP cap Mar–Dec (Rp)</label><input type="number" value={emp.jpCapNew} onChange={e=>upd("jpCapNew",e.target.value)} style={{width:"100%",boxSizing:"border-box"}} /></div>
-              <div style={{gridColumn:"1/-1",fontSize:11,color:"var(--color-text-secondary)"}}>JHT: Er 3.7% + Emp 2% · JP: Er 2% + Emp 1% (capped{emp.isExpat?", exempt for expat":""}) · JKM: Er 0.3%</div>
+              <div><label style={lbl}>JP cap Jan–Feb (Rp)</label><NumberInput value={emp.jpCapOld} onChange={v=>upd("jpCapOld",v)} style={{width:"100%",boxSizing:"border-box"}} /></div>
+              <div><label style={lbl}>JP cap Mar–Dec (Rp)</label><NumberInput value={emp.jpCapNew} onChange={v=>upd("jpCapNew",v)} style={{width:"100%",boxSizing:"border-box"}} /></div>
+              <div style={{gridColumn:"1/-1",fontSize:11,color:"var(--color-text-secondary)"}}>JHT: Employer 3.7% + Employee 2% · JP: Employer 2% + Employee 1% (capped{emp.isExpat?", exempt for expat":""}) · JKM: Employer 0.3%</div>
             </div>}
             <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13,marginBottom:6}}><input type="checkbox" checked={emp.bpjsAllowEnabled} onChange={e=>upd("bpjsAllowEnabled",e.target.checked)} />Employer bears employee BPJS share (BPJS Allowance — taxable income)</label>
-            {emp.bpjsAllowEnabled&&<p style={{fontSize:11,color:"var(--color-text-secondary)",marginLeft:22,marginTop:0}}>Adds JHT Emp + JP Emp + Kes Emp as taxable allowance. Included in TER base.</p>}
+            {emp.bpjsAllowEnabled&&<p style={{fontSize:11,color:"var(--color-text-secondary)",marginLeft:22,marginTop:0}}>Adds JHT Employee + JP Employee + Kes Employee as taxable allowance. Included in TER base.</p>}
           </div>
           <div style={{gridColumn:"1/-1"}}>
-            <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13}}><input type="checkbox" checked={emp.bpjsKesEnabled} onChange={e=>upd("bpjsKesEnabled",e.target.checked)} />Enable BPJS Kesehatan (Er 4% + Emp 1%, base capped at {fmt(KES_CAP)}/month)</label>
-            {emp.bpjsKesEnabled&&<p style={{fontSize:11,color:"var(--color-text-secondary)",marginLeft:22,marginTop:4}}>Max employer: {fmt(KES_CAP*.04)}/month · Max employee: {fmt(KES_CAP*.01)}/month · Employer share included in taxable Er BPJS</p>}
+            <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13}}><input type="checkbox" checked={emp.bpjsKesEnabled} onChange={e=>upd("bpjsKesEnabled",e.target.checked)} />Enable BPJS Kesehatan (Employer 4% + Employee 1%, base capped at {fmt(KES_CAP)}/month)</label>
+            {emp.bpjsKesEnabled&&<p style={{fontSize:11,color:"var(--color-text-secondary)",marginLeft:22,marginTop:4}}>Max employer: {fmt(KES_CAP*.04)}/month · Max employee: {fmt(KES_CAP*.01)}/month · Employer share included in taxable employer BPJS</p>}
           </div>
         </div>
       )}
@@ -537,7 +543,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
               <div key={a.id} style={{marginBottom:12,padding:"12px",background:"var(--color-background-secondary)",borderRadius:"var(--border-radius-md)"}}>
                 <div style={{display:"grid",gridTemplateColumns:"1.8fr 1fr 0.7fr 0.7fr 1fr 1fr auto",gap:8,alignItems:"end"}}>
                   <div><label style={lbl}>Name</label><input value={a.name} onChange={e=>updAllow(a.id,"name",e.target.value)} placeholder="e.g. Housing" style={{width:"100%",boxSizing:"border-box"}} /></div>
-                  <div><label style={lbl}>Amount (Rp/month)</label><input type="number" value={a.amount} onChange={e=>updAllow(a.id,"amount",e.target.value)} style={{width:"100%",boxSizing:"border-box"}} /></div>
+                  <div><label style={lbl}>Amount (Rp/month)</label><NumberInput value={a.amount} onChange={v=>updAllow(a.id,"amount",v)} style={{width:"100%",boxSizing:"border-box"}} /></div>
                   <div><label style={lbl}>From</label>
                     <select value={a.startMonth} onChange={e=>updAllow(a.id,"startMonth",parseInt(e.target.value))} style={{width:"100%",boxSizing:"border-box"}}>
                       {activeMths.map(i=><option key={i} value={i}>{MN[i]}</option>)}
@@ -565,7 +571,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
                 <div style={{marginTop:8,fontSize:11,color:"var(--color-text-secondary)",display:"flex",gap:14,flexWrap:"wrap"}}>
                   <span>{MN[parseInt(a.startMonth)]}–{MN[parseInt(a.endMonth)]} ({Math.max(0,parseInt(a.endMonth)-parseInt(a.startMonth)+1)} months)</span>
                   <span>{a.taxable?(a.isNet?"Net — grossed up":"Gross — taxable"):"Non-taxable"}</span>
-                  {preview&&a.isNet&&a.taxable&&<span style={{color:"var(--color-text-primary)"}}>Gross: <strong>{fmt(preview.grossAmt)}</strong> · Tax allow: <strong style={{color:"green"}}>{fmt(preview.taxAllow)}</strong> (from {MN[firstM.m]})</span>}
+                  {preview&&a.isNet&&a.taxable&&<span style={{color:"var(--color-text-primary)"}}>Gross: <strong>{fmt(preview.grossAmt)}</strong> · Tax Allowance: <strong style={{color:"green"}}>{fmt(preview.taxAllow)}</strong> (from {MN[firstM.m]})</span>}
                 </div>
               </div>
             );
@@ -590,7 +596,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
               <div key={b.id} style={{marginBottom:12,padding:"12px",background:"var(--color-background-secondary)",borderRadius:"var(--border-radius-md)"}}>
                 <div style={{display:"grid",gridTemplateColumns:"1.8fr 1fr 0.8fr 0.8fr auto",gap:8,alignItems:"end"}}>
                   <div><label style={lbl}>Bonus name</label><input value={b.name} onChange={e=>updBonus(b.id,"name",e.target.value)} placeholder="e.g. THR" style={{width:"100%",boxSizing:"border-box"}} /></div>
-                  <div><label style={lbl}>Amount (Rp)</label><input type="number" value={b.amount} onChange={e=>updBonus(b.id,"amount",e.target.value)} style={{width:"100%",boxSizing:"border-box"}} /></div>
+                  <div><label style={lbl}>Amount (Rp)</label><NumberInput value={b.amount} onChange={v=>updBonus(b.id,"amount",v)} style={{width:"100%",boxSizing:"border-box"}} /></div>
                   <div><label style={lbl}>Pay month</label>
                     <select value={b.month} onChange={e=>updBonus(b.id,"month",parseInt(e.target.value))} style={{width:"100%",boxSizing:"border-box"}}>
                       {activeMths.map(i=><option key={i} value={i}>{MN[i]}{i===endM?" (fin.)":""}</option>)}
@@ -609,7 +615,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
                   {row&&!isFinMonth&&found&&(
                     <>
                       <span>Input: <strong>{fmt(parseFloat(b.amount)||0)}</strong> ({b.isNet?"net":"gross"})</span>
-                      {b.isNet&&<span style={{color:"var(--color-text-primary)"}}>Grossed-up: <strong>{fmt(found.grossAmt)}</strong> · Tax allow: <strong style={{color:"green"}}>{fmt(found.taxAllow)}</strong></span>}
+                      {b.isNet&&<span style={{color:"var(--color-text-primary)"}}>Grossed-up: <strong>{fmt(found.grossAmt)}</strong> · Tax Allowance: <strong style={{color:"green"}}>{fmt(found.taxAllow)}</strong></span>}
                       <span>TER base: <strong>{fmt(row.terBase)}</strong> · TER: <strong>{pct(row.ter)}</strong> · PPh 21: <strong>{fmt(row.pph21)}</strong></span>
                     </>
                   )}
@@ -632,20 +638,20 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
               <tr style={{borderBottom:"0.5px solid var(--color-border-tertiary)"}}>
                 <th style={{...th,textAlign:"left"}}>Month</th>
                 <th style={th}>Gross salary</th>
-                {emp.bpjsAllowEnabled&&<th style={{...th,color:"orange"}}>BPJS Allow.</th>}
-                <th style={{...th,color:"var(--color-text-secondary)"}}>Er BPJS taxable</th>
+                {emp.bpjsAllowEnabled&&<th style={{...th,color:"orange"}}>BPJS allowance</th>}
+                <th style={{...th,color:"var(--color-text-secondary)"}}>Employer BPJS taxable</th>
+                <th style={th}>Taxable allowance</th>
                 <th style={{...th,fontWeight:600}}>TER base</th>
                 <th style={th}>TER rate</th>
-                <th style={{...th,color:"green"}}>Tax allow. (salary)</th>
-                <th style={{...th,color:"green"}}>Tax allow. (items)</th>
-                <th style={th}>Tax. allow.</th>
-                <th style={th}>Non-tax allow.</th>
+                <th style={{...th,color:"green"}}>Tax allowance (salary)</th>
+                <th style={{...th,color:"green"}}>Tax allowance (items)</th>
+                <th style={th}>Non-taxable allowance</th>
                 <th style={{...th,color:"var(--color-text-info)"}}>Bonus (gross)</th>
                 <th style={{...th,fontWeight:600}}>PPh 21</th>
-                <th style={th}>JHT emp</th>
-                <th style={th}>JP emp</th>
-                {emp.bpjsKesEnabled&&<th style={th}>Kes emp</th>}
-                <th style={{...th,fontWeight:600}}>Emp deduct.</th>
+                <th style={th}>JHT employee</th>
+                <th style={th}>JP employee</th>
+                {emp.bpjsKesEnabled&&<th style={th}>Kes employee</th>}
+                <th style={{...th,fontWeight:600}}>Employee deduction</th>
                 <th style={{...th,fontWeight:600,color:"green"}}>Net pay</th>
                 <th style={{...th,textAlign:"center"}}>▼</th>
               </tr>
@@ -663,11 +669,11 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
                 <td style={td}>{fmt(valid.reduce((s,m)=>s+m.gross,0))}</td>
                 {emp.bpjsAllowEnabled&&<td style={td}>{fmt(valid.reduce((s,m)=>s+m.bpjsAllow,0))}</td>}
                 <td style={td}>{fmt(valid.reduce((s,m)=>s+m.erTaxable,0))}</td>
+                <td style={td}>{fmt(valid.reduce((s,m)=>s+m.totalTaxableGross,0))}</td>
                 <td style={td}>{fmt(valid.reduce((s,m)=>s+m.terBase,0))}</td>
                 <td/>
                 <td style={td}>{fmt(valid.reduce((s,m)=>s+m.taxAllow2,0))}</td>
                 <td style={td}>{fmt(valid.reduce((s,m)=>s+m.totalTAItems,0))}</td>
-                <td style={td}>{fmt(valid.reduce((s,m)=>s+m.totalTaxableGross,0))}</td>
                 <td style={td}>{fmt(valid.reduce((s,m)=>s+m.nonTaxableAllow,0))}</td>
                 <td style={td}>{fmt(valid.reduce((s,m)=>s+m.totalBonusGross,0))}</td>
                 <td style={td}>{fmt(totPph)}</td>
@@ -694,7 +700,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
             {card("Total gross salary",valid.reduce((s,m)=>s+m.gross,0))}
             {emp.bpjsAllowEnabled&&card("Total BPJS allowance",valid.reduce((s,m)=>s+m.bpjsAllow,0),"taxable, borne by employer")}
             {card("Total TER base",valid.reduce((s,m)=>s+m.terBase,0),"all taxable items")}
-            {card("Total tax allow. (items)",valid.reduce((s,m)=>s+m.totalTAItems,0),"net allows + bonuses")}
+            {card("Total tax allowance (items)",valid.reduce((s,m)=>s+m.totalTAItems,0),"net allows + bonuses")}
             {card("Total PPh 21",totPph)}
             {card("Total net take-home",totNet)}
             {last?.finalData?.refund>0&&card("Est. tax refund",last.finalData.refund)}
@@ -714,11 +720,11 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
             {card("JKM employer (0.3%)",valid.reduce((s,m)=>s+m.bpjs.jkmEr,0),"taxable to employee")}
             {card("BpjsKes employer (4%)",valid.reduce((s,m)=>s+m.bpjs.kesEr,0),emp.bpjsKesEnabled?"cap Rp 12jt · taxable":"disabled")}
             {card("Total employer BPJS",valid.reduce((s,m)=>s+m.bpjs.jhtEr+m.bpjs.jpEr+m.bpjs.jkkEr+m.bpjs.jkmEr+m.bpjs.kesEr,0))}
-            {card("Taxable Er BPJS",valid.reduce((s,m)=>s+m.erTaxable,0),"JKK+JKM+KesEr → TER base")}
+            {card("Taxable employer BPJS",valid.reduce((s,m)=>s+m.erTaxable,0),"JKK + JKM + Kes employer → TER base")}
           </div>
           <p style={{fontSize:13,fontWeight:500,marginBottom:10}}>BPJS month-by-month</p>
           <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
-            <thead><tr>{["Month","JP Cap","JKK Er","JKM Er","Kes Er","Er Taxable","JHT Er","JP Er","JHT Emp","JP Emp","Kes Emp","Total Er","Total Emp"].map(h=><th key={h} style={{...th,textAlign:h==="Month"?"left":"right"}}>{h}</th>)}</tr></thead>
+            <thead><tr>{["Month","JP Cap","JKK Employer","JKM Employer","Kes Employer","Employer Taxable","JHT Employer","JP Employer","JHT Employee","JP Employee","Kes Employee","Total Employer","Total Employee"].map(h=><th key={h} style={{...th,textAlign:h==="Month"?"left":"right"}}>{h}</th>)}</tr></thead>
             <tbody>{payroll.map((row,i)=>row&&(
               <tr key={i} style={{borderBottom:"0.5px solid var(--color-border-tertiary)"}}>
                 <td style={{padding:"5px 6px",fontSize:12}}>{MN[i]}</td>
@@ -757,7 +763,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
                       {[
                         {l:"Gross salary (all active months)",v:valid.reduce((s,m)=>s+m.gross,0)},
                         ...(emp.bpjsAllowEnabled?[{l:"Add: BPJS allowance (taxable)",v:valid.reduce((s,m)=>s+m.bpjsAllow,0)}]:[]),
-                        {l:"Add: taxable employer BPJS (JKK+JKM+KesEr)",v:valid.reduce((s,m)=>s+m.erTaxable,0)},
+                        {l:"Add: taxable employer BPJS (JKK + JKM + Kes employer)",v:valid.reduce((s,m)=>s+m.erTaxable,0)},
                         {l:"Add: taxable allowances (grossed-up)",v:valid.reduce((s,m)=>s+m.totalTaxableGross,0)},
                         {l:"Add: tax allowances on net allowances",v:valid.reduce((s,m)=>s+m.taFromAllows,0)},
                         {l:"Add: bonuses (grossed-up)",v:valid.reduce((s,m)=>s+m.totalBonusGross,0),note:"per PMK 168/2023"},
@@ -820,7 +826,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
       )}
 
       <div style={{marginTop:20,padding:"8px 12px",background:"var(--color-background-secondary)",borderRadius:"var(--border-radius-md)",fontSize:11,color:"var(--color-text-secondary)"}}>
-        PMK 168/2023 (TER A/B/C) · PMK 101/2016 (PTKP) · PER-16/PJ/2015 (biaya jabatan; JKK+JKM+KesEr taxable) · PP 44/2015 &amp; PP 46/2015 (BPJS TK) · Perpres 82/2018 (BPJS Kes, cap Rp 12jt) · PP 55/2022 (natura) · JP: Jan–Feb {fmt(jpOld)} / Mar–Dec {fmt(jpNew)}{emp.isExpat?" · JP exempt (expat)":""}
+        PMK 168/2023 (TER A/B/C) · PMK 101/2016 (PTKP) · PER-16/PJ/2015 (biaya jabatan; JKK + JKM + Kes employer taxable) · PP 44/2015 &amp; PP 46/2015 (BPJS TK) · Perpres 82/2018 (BPJS Kes, cap Rp 12jt) · PP 55/2022 (natura) · JP: Jan–Feb {fmt(jpOld)} / Mar–Dec {fmt(jpNew)}{emp.isExpat?" · JP exempt (expat)":""}
       </div>
     </div>
   );
