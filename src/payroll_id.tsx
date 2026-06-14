@@ -20,6 +20,7 @@ const JKK_R={"I — Sangat Rendah (0.24%)":0.0024,"II — Rendah (0.54%)":0.0054
 const JP_OLD=10547400,JP_NEW=11086300,KES_CAP=12000000;
 const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const fmt=n=>"Rp "+Math.round(n).toLocaleString("id-ID");
+const fmt2=n=>"Rp "+n.toLocaleString("id-ID",{minimumFractionDigits:2,maximumFractionDigits:2});
 const pct=n=>(n*100).toFixed(2)+"%";
 const rd100=v=>Math.floor(v/100)*100;
 const uid=()=>Date.now()+Math.random();
@@ -295,6 +296,8 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
   const[bonuses,setBonuses]=useState([]);
   const[tab,setTab]=useState("setup");
   const[xlsxReady,setXlsxReady]=useState(false);
+  const[pdfReady,setPdfReady]=useState(false);
+  const[pdfMonth,setPdfMonth]=useState(11);
   const[expandedMonths,setExpandedMonths]=useState({});
 
   useEffect(()=>{
@@ -302,6 +305,19 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
     const s=document.createElement("script");
     s.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
     s.onload=()=>setXlsxReady(true);
+    document.head.appendChild(s);
+  },[]);
+
+  useEffect(()=>{
+    if(window.jspdf?.jsPDF){setPdfReady(true);return;}
+    const s=document.createElement("script");
+    s.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+    s.onload=()=>{
+      const s2=document.createElement("script");
+      s2.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js";
+      s2.onload=()=>setPdfReady(true);
+      document.head.appendChild(s2);
+    };
     document.head.appendChild(s);
   },[]);
 
@@ -314,6 +330,7 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
   const jpNew=parseFloat(emp.jpCapNew)||JP_NEW;
   const activeMths=MN.map((_,i)=>i).filter(i=>i>=startM&&i<=endM);
   const sortedSalary=useMemo(()=>[...salaryHistory].sort((a,b)=>parseInt(a.month)-parseInt(b.month)),[salaryHistory]);
+  const pdfMonthSafe=activeMths.includes(pdfMonth)?pdfMonth:endM;
 
   const updSalary=(id,k,v)=>setSalaryHistory(h=>h.map(x=>x.id===id?{...x,[k]:v}:x));
   const addSalaryChange=()=>{
@@ -401,6 +418,119 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
     setTimeout(()=>{URL.revokeObjectURL(url);document.body.removeChild(a);},100);
   };
 
+  const exportPDF=()=>{
+    if(!window.jspdf||!pdfReady)return;
+    const row=payroll[pdfMonthSafe];
+    if(!row)return;
+    const{jsPDF}=window.jspdf;
+    const doc=new jsPDF({unit:"pt",format:"a4"});
+    const pageW=doc.internal.pageSize.getWidth();
+    const margin=40;
+    let y=50;
+
+    doc.setFont("helvetica","bold");doc.setFontSize(14);
+    doc.text("Payslip",margin,y);
+    doc.setFont("helvetica","normal");doc.setFontSize(9);
+    doc.text(`Generated ${new Date().toLocaleDateString("id-ID")}`,pageW-margin,y,{align:"right"});
+
+    y+=20;
+    doc.autoTable({
+      startY:y,margin:{left:margin},tableWidth:pageW-2*margin,
+      body:[
+        ["Name",emp.name||"—","Period",`${MN[pdfMonthSafe]} ${emp.year}`],
+        ["NPWP",emp.npwp||"—","Tax Status",emp.ptkp],
+      ],
+      theme:"plain",styles:{fontSize:9,cellPadding:3},
+      columnStyles:{0:{fontStyle:"bold",cellWidth:70},2:{fontStyle:"bold",cellWidth:70}},
+    });
+    y=doc.lastAutoTable.finalY+12;
+
+    const incomes=[["Basic Salary",fmt2(row.gross)]];
+    row.rAllows.forEach(a=>{if(a.grossAmt>0)incomes.push([a.name||"Allowance",fmt2(a.grossAmt)]);});
+    row.rBonuses.forEach(b=>{if(b.grossAmt>0)incomes.push([b.name||"Bonus",fmt2(b.grossAmt)]);});
+    if(row.taxAllow2>0)incomes.push(["Tax Allowance (Salary)",fmt2(row.taxAllow2)]);
+    if(row.totalTAItems>0)incomes.push(["Tax Allowance (Items)",fmt2(row.totalTAItems)]);
+    if(row.nonTaxableAllow>0)incomes.push(["Non-Taxable Allowance",fmt2(row.nonTaxableAllow)]);
+    if(emp.bpjsAllowEnabled&&row.bpjsAllow>0)incomes.push(["BPJS Allowance",fmt2(row.bpjsAllow)]);
+    if(emp.bpjsKesEnabled)incomes.push(["BPJS Kesehatan — Employer",fmt2(row.bpjs.kesEr)]);
+    if(emp.bpjsEnabled){
+      incomes.push(["BPJS JHT — Employer",fmt2(row.bpjs.jhtEr)]);
+      incomes.push(["BPJS JKK — Employer",fmt2(row.bpjs.jkkEr)]);
+      incomes.push(["BPJS JKM — Employer",fmt2(row.bpjs.jkmEr)]);
+      if(!emp.isExpat)incomes.push(["BPJS JP — Employer",fmt2(row.bpjs.jpEr)]);
+    }
+    const erBpjsTotal=row.bpjs.jhtEr+row.bpjs.jpEr+row.bpjs.jkkEr+row.bpjs.jkmEr+row.bpjs.kesEr;
+    const totalIncomes=row.gross+row.totalTaxableGross+row.totalTAItems+row.nonTaxableAllow+row.totalBonusGross+row.taxAllow2+row.bpjsAllow+erBpjsTotal;
+
+    const deductions=[];
+    if(emp.bpjsKesEnabled)deductions.push(["BPJS Kesehatan — Employee",fmt2(row.bpjs.kesEmp)]);
+    if(emp.bpjsEnabled){
+      deductions.push(["BPJS JHT — Employee",fmt2(row.bpjs.jhtEmp)]);
+      if(!emp.isExpat)deductions.push(["BPJS JP — Employee",fmt2(row.bpjs.jpEmp)]);
+    }
+    deductions.push(["PPh 21",fmt2(row.pph21)]);
+    if(emp.bpjsKesEnabled)deductions.push(["BPJS Kesehatan — Employer",fmt2(row.bpjs.kesEr)]);
+    if(emp.bpjsEnabled){
+      deductions.push(["BPJS JHT — Employer",fmt2(row.bpjs.jhtEr)]);
+      deductions.push(["BPJS JKK — Employer",fmt2(row.bpjs.jkkEr)]);
+      deductions.push(["BPJS JKM — Employer",fmt2(row.bpjs.jkmEr)]);
+      if(!emp.isExpat)deductions.push(["BPJS JP — Employer",fmt2(row.bpjs.jpEr)]);
+    }
+    const totalDeductions=row.empDeduct+erBpjsTotal;
+
+    const colW=(pageW-2*margin-12)/2;
+    doc.setFont("helvetica","bold");doc.setFontSize(10);
+    doc.text("Incomes",margin,y);
+    doc.text("Deductions",margin+colW+12,y);
+    doc.setFont("helvetica","normal");
+    y+=6;
+
+    doc.autoTable({
+      startY:y,margin:{left:margin},tableWidth:colW,
+      head:[["Item","Amount"]],body:incomes,theme:"grid",
+      styles:{fontSize:8,cellPadding:3},headStyles:{fillColor:[235,235,235],textColor:20},
+      columnStyles:{1:{halign:"right"}},
+    });
+    const incomesY=doc.lastAutoTable.finalY;
+
+    doc.autoTable({
+      startY:y,margin:{left:margin+colW+12},tableWidth:colW,
+      head:[["Item","Amount"]],body:deductions,theme:"grid",
+      styles:{fontSize:8,cellPadding:3},headStyles:{fillColor:[235,235,235],textColor:20},
+      columnStyles:{1:{halign:"right"}},
+    });
+    const deductionsY=doc.lastAutoTable.finalY;
+
+    y=Math.max(incomesY,deductionsY)+6;
+    doc.autoTable({
+      startY:y,margin:{left:margin},tableWidth:colW,
+      body:[["Total Incomes",fmt2(totalIncomes)]],theme:"grid",
+      styles:{fontSize:8,cellPadding:3,fontStyle:"bold"},columnStyles:{1:{halign:"right"}},
+    });
+    const totIncY=doc.lastAutoTable.finalY;
+    doc.autoTable({
+      startY:y,margin:{left:margin+colW+12},tableWidth:colW,
+      body:[["Total Deductions",fmt2(totalDeductions)]],theme:"grid",
+      styles:{fontSize:8,cellPadding:3,fontStyle:"bold"},columnStyles:{1:{halign:"right"}},
+    });
+    const totDedY=doc.lastAutoTable.finalY;
+
+    y=Math.max(totIncY,totDedY)+10;
+    doc.autoTable({
+      startY:y,margin:{left:margin},tableWidth:pageW-2*margin,
+      body:[["Take Home Pay",fmt2(totalIncomes-totalDeductions)]],theme:"grid",
+      styles:{fontSize:10,cellPadding:5,fontStyle:"bold"},
+      columnStyles:{1:{halign:"right"}},
+      bodyStyles:{fillColor:[245,250,245]},
+    });
+    y=doc.lastAutoTable.finalY+10;
+
+    doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(120);
+    doc.text(`TER ${terCat} (${emp.ptkp}) · TER rate ${pct(row.ter)} · TER base ${fmt(row.terBase)}${emp.hasNpwp?"":" · No NPWP: +20% PPh 21"}`,margin,y);
+
+    doc.save(`Payslip_${(emp.name||"Employee").replace(/\s+/g,"_")}_${MN[pdfMonthSafe]}_${emp.year}.pdf`);
+  };
+
   const tabSt=t=>({padding:"8px 14px",fontSize:13,cursor:"pointer",border:"none",borderBottom:tab===t?"2px solid var(--color-text-primary)":"2px solid transparent",background:"transparent",color:tab===t?"var(--color-text-primary)":"var(--color-text-secondary)",fontWeight:tab===t?500:400});
   const lbl={fontSize:12,color:"var(--color-text-secondary)",display:"block",marginBottom:4};
   const td={textAlign:"right",padding:"5px 4px",fontSize:11.5};
@@ -427,7 +557,11 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
             {t==="setup"?"Employee setup":t==="allowances"?`Allowances${allows.length?` (${allows.length})`:""}`:t==="bonuses"?`Bonuses${bonuses.length?` (${bonuses.length})`:""}`:t==="monthly"?"Monthly payroll":t==="summary"?"Year summary":"Tax annualization"}
           </button>
         ))}
-        <button onClick={exportExcel} disabled={!xlsxReady} style={{marginLeft:"auto",padding:"6px 16px",fontSize:13,background:"var(--color-background-info)",color:"var(--color-text-info)",border:"0.5px solid var(--color-border-info)",borderRadius:"var(--border-radius-md)",cursor:xlsxReady?"pointer":"not-allowed",opacity:xlsxReady?1:0.5}}>{xlsxReady?"Export Excel":"Loading…"}</button>
+        <select value={pdfMonthSafe} onChange={e=>setPdfMonth(parseInt(e.target.value))} style={{marginLeft:"auto",padding:"6px 8px",fontSize:12,boxSizing:"border-box"}}>
+          {activeMths.map(i=><option key={i} value={i}>{MN[i]}</option>)}
+        </select>
+        <button onClick={exportPDF} disabled={!pdfReady} style={{padding:"6px 16px",fontSize:13,background:"var(--color-background-info)",color:"var(--color-text-info)",border:"0.5px solid var(--color-border-info)",borderRadius:"var(--border-radius-md)",cursor:pdfReady?"pointer":"not-allowed",opacity:pdfReady?1:0.5}}>{pdfReady?"Export PDF":"Loading…"}</button>
+        <button onClick={exportExcel} disabled={!xlsxReady} style={{padding:"6px 16px",fontSize:13,background:"var(--color-background-info)",color:"var(--color-text-info)",border:"0.5px solid var(--color-border-info)",borderRadius:"var(--border-radius-md)",cursor:xlsxReady?"pointer":"not-allowed",opacity:xlsxReady?1:0.5}}>{xlsxReady?"Export Excel":"Loading…"}</button>
         <button onClick={onSignOut} style={{padding:"6px 12px",fontSize:12,fontFamily:"var(--font-sans)",color:"var(--color-text-secondary)",background:"transparent",border:"0.5px solid var(--color-border-tertiary)",borderRadius:"var(--border-radius-md)",cursor:"pointer"}}>Sign out</button>
       </div>
 
