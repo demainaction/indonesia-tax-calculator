@@ -137,9 +137,12 @@ function resolveMonth(cfg){
 }
 
 // Sub-component for month rows (avoids fragment-in-map transpiler issues)
-function MonthRow({mn,i,row,active,isFin,isExp,onToggle,emp,fmt,pct}){
+function MonthRow({mn,i,row,active,isFin,isExp,onToggle,emp,fmt,pct,prevRow}){
   const s={textAlign:"right",padding:"5px 4px",fontSize:11.5};
   const showBtn=active&&(row.rAllows.length>0||row.rBonuses.length>0||row.bpjsAllow>0);
+  const netChg=active&&prevRow?(row.netPay-prevRow.netPay)/prevRow.netPay*100:null;
+  const netChgStr=netChg!==null?(netChg>=0?"+":"")+netChg.toFixed(2)+"%":null;
+  const netChgColor=netChg===null?null:netChg>0?"var(--color-text-success)":netChg<0?"var(--color-text-danger)":"var(--color-text-secondary)";
   const mainTr=(
     <tr style={{borderBottom:isExp&&showBtn?"none":"0.5px solid var(--color-border-tertiary)",background:isFin?"var(--color-background-warning)":"transparent",opacity:active?1:0.3}}>
       <td style={{padding:"5px 4px",fontSize:12,fontWeight:isFin?500:400}}>
@@ -162,7 +165,10 @@ function MonthRow({mn,i,row,active,isFin,isExp,onToggle,emp,fmt,pct}){
       <td style={s}>{active?fmt(row.bpjs.jpEmp):"—"}</td>
       {emp.bpjsKesEnabled&&<td style={s}>{active?fmt(row.bpjs.kesEmp):"—"}</td>}
       <td style={{...s,fontWeight:600}}>{active?fmt(row.empDeduct):"—"}</td>
-      <td style={{...s,fontWeight:600,color:"var(--color-text-success)"}}>{active?fmt(row.netPay):"—"}</td>
+      <td style={{...s,fontWeight:600,color:"var(--color-text-success)"}}>
+        {active?fmt(row.netPay):"—"}
+        {netChgStr&&<span style={{display:"block",fontSize:10,color:netChgColor,fontWeight:400}}>{netChgStr}</span>}
+      </td>
       <td style={{...s,textAlign:"center"}}>
         {showBtn&&<button onClick={()=>onToggle(i)} style={{fontSize:11,padding:"2px 8px",cursor:"pointer",border:"0.5px solid var(--color-border-tertiary)",borderRadius:4,background:"transparent"}}>{isExp?"▲":"▼"}</button>}
       </td>
@@ -171,7 +177,7 @@ function MonthRow({mn,i,row,active,isFin,isExp,onToggle,emp,fmt,pct}){
   if(!active||!isExp||!showBtn) return mainTr;
   const ths=["Name","Input","Type","Gross","Tax Allowance"].map(h=><th key={h} style={{textAlign:"right",padding:"3px 8px",fontSize:11,color:"#888",fontWeight:500}}>{h}</th>);
   return (
-    <React.Fragment>
+    <>
       {mainTr}
       <tr style={{borderBottom:"0.5px solid var(--color-border-tertiary)",background:"var(--color-background-secondary)"}}>
         <td colSpan={20} style={{padding:"10px 16px",fontSize:12}}>
@@ -226,7 +232,7 @@ function MonthRow({mn,i,row,active,isFin,isExp,onToggle,emp,fmt,pct}){
           </div>
         </td>
       </tr>
-    </React.Fragment>
+    </>
   );
 }
 
@@ -794,7 +800,9 @@ function PayrollCalculator({ onSignOut }: { onSignOut: () => void }){
               {MN.map((mn,i)=>{
                 const row=payroll[i],active=row!==null,isFin=active&&row.isEnd,isExp=!!expandedMonths[i];
                 const showDetail=active&&(row.rAllows.length>0||row.rBonuses.length>0||row.bpjsAllow>0);
-                return <MonthRow key={i} mn={mn} i={i} row={row} active={active} isFin={isFin} isExp={isExp} showDetail={showDetail} onToggle={toggleExpand} emp={emp} fmt={fmt} pct={pct} />;
+                const idx=active?valid.findIndex(r=>r.m===i):-1;
+                const prevRow=idx>0?valid[idx-1]:null;
+                return <MonthRow key={i} mn={mn} i={i} row={row} active={active} isFin={isFin} isExp={isExp} showDetail={showDetail} onToggle={toggleExpand} emp={emp} fmt={fmt} pct={pct} prevRow={prevRow} />;
               })}
             </tbody>
             <tfoot>
